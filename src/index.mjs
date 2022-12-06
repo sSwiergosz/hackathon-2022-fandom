@@ -1,26 +1,47 @@
-import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
+import {ApolloServer} from '@apollo/server';
+import {expressMiddleware} from '@apollo/server/express4';
+import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer'
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import pino from 'pino';
+import {DynamoDBClient, QueryCommand} from "@aws-sdk/client-dynamodb";
 
-import { typeDefs } from "./typeDefs.js";
-import { getUserData } from "./resolvers.js";
+import {typeDefs} from "./typeDefs.js";
 
 dotenv.config();
 
 const logger = pino({ level: process.env.NODE_ENV === 'production' ? 'info' : 'debug' });
 
+const client = new DynamoDBClient({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+});
+
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
-        userData: (_, args) => {
+        userData: async (_, args) => {
             try {
-                return getUserData(args.id)
+                const params = {
+                    ExpressionAttributeValues: {
+                        ":userId": {
+                            S: args.id,
+                        },
+                    },
+                    KeyConditionExpression: "user_id = :userId",
+                    TableName: "fandom_in_year_hackathon",
+                    ProjectionExpression: "user_id, stats",
+                };
+
+                const data = await client.send(new QueryCommand(params));
+
+                return JSON.parse(data?.Items[0]?.stats.S);
             } catch(err) {
                 logger.error(err, 'Failed to fetch data');
             }

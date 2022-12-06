@@ -18,12 +18,12 @@ export const typeDefs = `#graphql
         top_fandoms: [TopFandom]
     }
 
-    type UserData {
-        user_id: ID
-        stats: Stats
-    }
+#    type UserData {
+#        user_id: ID
+#        stats: Stats
+#    }
     
     type Query {
-        userData(id: ID!): UserData
+        userData(id: ID!): Stats
     }
 `;
