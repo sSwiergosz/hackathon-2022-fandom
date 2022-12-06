@@ -1,56 +1,44 @@
 export const getUserData = (id) => {
-    const db = {
-        1: {
-            total_pv: 1000,
-            days_on_fandom: 45,
-            creates: 120,
-            contributes: 10,
-            posts: 74,
-            top_fandoms: [
+    const db = [{
+        user_id: 1,
+        stats: {
+            "total_pv":145643,
+            "days_on_fandom":35,
+            "creates":9,
+            "contributes":36,
+            "posts":5,
+            "top_fandoms":[
                 {
-                    fandom_metadata: {
-                        name: 'Star Wars',
-                        logo: 'logo url'
+                    "fandom_metadata":{
+                        "name":"Star Wars",
+                        "logo":"https://logo_starwars"
                     },
-                    top_articles: [
+                    "top_articles":[
                         {
-                            name: 'R2-D2',
-                            logo: 'An image of R2-D2 robot',
+                            "article_name":"Luke Skywalker",
+                            "article_logo":"https://other_starwars_logo"
                         },
                         {
-                            name: 'C3-PO',
-                            logo: 'An image of C3-PO robot',
-                        },
-                    ],
+                            "article_name":"Han Solo",
+                            "article_logo":"https://another_starwars_logo"
+                        }
+                    ]
                 },
-            ],
-        },
-        2: {
-            total_pv: 714,
-            days_on_fandom: 5,
-            creates: 97,
-            contributes: 24,
-            posts: 4,
-            top_fandoms: [
                 {
-                    fandom_metadata: {
-                        name: 'Minecraft',
-                        logo: 'logo url'
+                    "fandom_metadata":{
+                        "name":"Marvel",
+                        "logo":"https://logo_marvel"
                     },
-                    top_articles: [
+                    "top_articles":[
                         {
-                            name: 'Creeper',
-                            logo: 'An image of Creeper',
-                        },
-                        {
-                            name: 'Skeleton',
-                            logo: 'An image of Skeleton',
-                        },
-                    ],
-                },
-            ],
+                            "article_name":"Hulk",
+                            "article_logo":"https://hulk_logo"
+                        }
+                    ]
+                }
+            ]
         }
-    };
+    }];
 
-    return db[id];
+    return db.find((el) => Number(el.user_id) === Number(id));
 };
