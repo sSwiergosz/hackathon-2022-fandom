@@ -6,16 +6,25 @@ import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import pino from 'pino';
 
 import { typeDefs } from "./typeDefs.js";
 import { getUserData } from "./resolvers.js";
 
 dotenv.config();
 
+const logger = pino({ level: process.env.NODE_ENV === 'production' ? 'info' : 'debug' });
+
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
-        userData: (_, args) => getUserData(args.id),
+        userData: (_, args) => {
+            try {
+                return getUserData(args.id)
+            } catch(err) {
+                logger.error(err, 'Failed to fetch data');
+            }
+        },
     },
 };
 
@@ -37,4 +46,4 @@ app.use(
 );
 
 await new Promise((resolve) => httpServer.listen({ port: process.env.PORT }, resolve));
-console.log(`🚀 Server ready at http://localhost:${process.env.PORT}`);
+logger.info(`🚀 Server ready at http://localhost:${process.env.PORT}`);
