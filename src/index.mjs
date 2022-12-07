@@ -40,8 +40,22 @@ const resolvers = {
                 };
 
                 const data = await client.send(new QueryCommand(params));
+                const result = data?.Items[0]?.stats.S;
+                const strippedResult = result
+                    .replace(/\\n/g, "\\n")
+                    .replace(/\\'/g, "\\'")
+                    .replace(/\\"/g, '\\"')
+                    .replace(/\\&/g, "\\&")
+                    .replace(/\\r/g, "\\r")
+                    .replace(/\\t/g, "\\t")
+                    .replace(/\\b/g, "\\b")
+                    .replace(/\\f/g, "\\f")
+                    .replace(/[\u0000-\u0019]+/g,"");
 
-                return JSON.parse(data?.Items[0]?.stats.S);
+                console.log(strippedResult);
+                console.log('\n\n\n');
+
+                return JSON.parse(strippedResult);
             } catch(err) {
                 logger.error(err, 'Failed to fetch data');
             }
